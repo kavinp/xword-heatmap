@@ -115,7 +115,8 @@ class Crossword:
             for j in range(1, self.cols + 1):
                 diff = self.diffMap[i][j] if self.diffMap[i][j] else 0
                 diff = to_str_with_sign(normalize_diff(diff))
-                sys.stdout.write(u"\u001b[30m\u001b[48;5;" + str(heatDict[diff]) + "m " + str(diff).ljust(4))
+                to_print = self.grid[i][j]
+                sys.stdout.write(u"\u001b[30m\u001b[48;5;" + str(heatDict[diff]) + "m " + to_print.ljust(2))
             print(u"\u001b[0m")
 
         # for i in range(-5, 6):
