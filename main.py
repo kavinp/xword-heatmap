@@ -102,21 +102,27 @@ class Crossword:
         """ Put clues from data into the self.words dictionary.
             Dir is 'a' for across or 'd' for down."""
         for clue in clues:
+            clue = clean_clue(clue) # WARNING: can't use <> in xword with this!
             num = int(clue.split('.')[0])
-            diff = int(clue[-3:-1]) if clue[-1] == '}' else None
+            # get difficulty in between curly braces
+            diff = int(clue.rpartition('{')[2][:-1]) if clue[-1] == '}' else None
             clue = clue.partition('. ')[2]
-            clue = clue.partition(' {')[2]
+            clue = clue.rpartition(' {')[2]
             self.words[num][dir]['diff'] = diff
             self.words[num][dir]['clue'] = clue
 
+    def printGrid(self):
+        for row in self.grid[1:]:
+            print(row[1:])
 
     def printHeat(self):
         for i in range(1, self.rows + 1):
             for j in range(1, self.cols + 1):
                 diff = self.diffMap[i][j] if self.diffMap[i][j] else 0
                 diff = to_str_with_sign(normalize_diff(diff))
-                to_print = self.grid[i][j]
-                sys.stdout.write(u"\u001b[30m\u001b[48;5;" + str(heatDict[diff]) + "m " + to_print.ljust(2))
+                color_code = str(232 if self.grid[i][j] == '.' else heatDict[diff])
+                to_print = normalize_box(self.grid[i][j])
+                sys.stdout.write(u"\u001b[30m\u001b[48;5;" + color_code + "m " + to_print.ljust(2))
             print(u"\u001b[0m")
 
         # for i in range(-5, 6):
@@ -131,3 +137,7 @@ if __name__ == "__main__":
         data = json.load(read_file)
     x = Crossword(data)
     x.printHeat()
+    # for w in x.words:
+    #     print(w)
+    # for row in x.diffMap:
+    #     print(row)
